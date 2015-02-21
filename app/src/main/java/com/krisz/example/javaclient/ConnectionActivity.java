@@ -19,7 +19,8 @@ public class ConnectionActivity extends Activity {
                 @Override
                 public void onClick(View arg0) {
                     SocketClient myClient = new SocketClient("192.168.0.105", 9999);
-                    myClient.sendMsg("");
+                    myClient.sendMsg(editTextAddress.getString());
+                    myClient.Close();
                 }
             };
 
