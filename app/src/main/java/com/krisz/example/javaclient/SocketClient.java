@@ -17,7 +17,7 @@ public class SocketClient {
     private Socket client;
     private BufferedReader read;
     private BufferedWriter output;
-    private Thread thrd;
+    private Thread thread;
 
     private String ipAddress;
     private int ipPort;
@@ -25,11 +25,13 @@ public class SocketClient {
     private String msgResponse = "";
 
     public SocketClient(String serverIp, int serverPort) {
+        Log.d("Csatlakozás", "Konstruktor meghívva.");
         this.ipAddress = serverIp;
         this.ipPort = serverPort;
     }
 
     public String sendMsg(String msgToSend) {
+        Log.d("Csatlakozás", "sendMsg() meghívva.");
         try {
             output.write(msgToSend + "\n");
             output.flush();
@@ -39,15 +41,19 @@ public class SocketClient {
     }
 
     public void Connect() {
+        Log.d("Csatlakozás", "Connect() meghívva.");
         msgResponse = "";
         try {
+            Log.d("Csatlakozás", "Try beléptetve.");
             client = new Socket(ipAddress, ipPort);
+            Log.d("Csatlakozás", "Socket hozzárendelve.");
             read = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            output = new BufferedWriter(new OutputStreamWriter(client
-                    .getOutputStream()));
-
-            thrd = new Thread(new Runnable() {
+            Log.d("Csatlakozás", "BufferedReader StreamReaderhez.");
+            output = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+            Log.d("Csatlakozás", "thread jön.");
+            thread = new Thread(new Runnable() {
                 public void run() {
+                    Log.d("Csatlakozás", "Belépve a run()-ba.");
                     while (!Thread.interrupted()) {
                         try {
                             final String data = read.readLine();
@@ -60,14 +66,15 @@ public class SocketClient {
                     }
                 }
             });
-            thrd.start();
+            Log.d("Csatlakozás", "Jön a thread.start().");
+            thread.start();
         } catch (IOException ioe) {
         }
     }
 
     public void Close() {
-        if (thrd != null)
-            thrd.interrupt();
+        if (thread != null)
+            thread.interrupt();
         try {
             if (client != null) {
                 client.getOutputStream().close();
@@ -76,6 +83,6 @@ public class SocketClient {
             }
         } catch (IOException e) {
         }
-        thrd = null;
+        thread = null;
     }
 }
